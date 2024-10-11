@@ -1,0 +1,25 @@
+Neural Network -
+    - Neurons For All Inputs -
+        - Sight -
+            - x lines coming from face
+            - x could be tied to possible eyesight statistic as well as amount of lines
+
+        - Attributes -
+            - Every attribute such as speed, size, eyesight, and other stats should have a neuron
+
+    - Neuron Output -
+        - Weight -
+            - Is multiplied by sum of all inputs
+            - Multiplied sum is sent as output to proceeding neuron.
+            - Genetic factor
+
+            - Synapsis -
+                - Line connecting 2 neurons 
+                - Genetic factor
+                - Multiplies its transmitted signal by varing weight
+        
+            
+    
+
+
+Evolution Algorithm -
