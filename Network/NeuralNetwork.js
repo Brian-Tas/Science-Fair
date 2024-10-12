@@ -1,8 +1,9 @@
 class Level {
-    constructor(inputCount, outputCount) {
+    constructor(inputCount, outputCount, activation = 'binary') {
         this.biases = new Array(outputCount);
         this.inputs = new Array(inputCount);
         this.outputs = new Array(outputCount).fill(0);
+        this.activation = activation;
 
         this.weights = [];
         for(let i = 0; i < inputCount; i++) {
@@ -23,6 +24,19 @@ class Level {
         }
     }
 
+    static activate(value, type) {
+        switch(type) {
+            case 'tanh':
+                return Math.tanh(value);
+            case 'relu':
+                return Math.max(-1, Math.min(1, value));
+            case 'binary':
+                return value > 0 ? 1 : 0;
+            default:
+                return value;
+        }
+    }
+
     static feedForward(level) {
         for(let i = 0; i < level.inputs.length; i++) {
             for(let j = 0; j < level.outputs.length; j++) {
@@ -30,12 +44,9 @@ class Level {
             }
         }
 
-        for(let j = 0; j < level.outputs.length; j++) {
-            if(level.outputs[j] > level.biases[j]) {
-                level.outputs[j] = 1;
-            } else {
-                level.outputs[j] = 0;
-            }
+        for (let j = 0; j < level.outputs.length; j++) {
+            level.outputs[j] += level.biases[j];
+            level.outputs[j] = Level.activate(level.outputs[j], level.activation);
         }
 
         return level.outputs;
@@ -43,22 +54,13 @@ class Level {
 }
 
 class NeuralNetwork {
-    constructor(neuronCount /* neurons per level; array */) {
+    constructor(neuronCount = [[5, 'tanh'], [7, 'tanh'], [7, 'tanh'], [2, 'tanh']] /* neurons per level; array */) {
         this.levels = [];
 
-        this.levels.push(new Level(
-            5, //2 sensors, speed, turn speed, bias 1
-            7
-        ));
-        this.levels[0].inputs = [2, -4, 5, -1];
-
-        this.levels.push(new Level(
-            7, 7
-        ));
-        this.levels.push(new Level(
-            7,
-            4 //left, right, forward, back
-        ))
+        for(let i = 0; i < neuronCount.length - 1; i++) {
+            this.levels.push(new Level(neuronCount[i][0], neuronCount[i + 1][0], neuronCount[i][1]));
+        }
+        this.levels[0].inputs = [1, 1, 0.5, 1, 0.3];
     }
 
     static feedForward(network) {
@@ -73,7 +75,4 @@ class NeuralNetwork {
     }
 }
 
-
-for(let i = 0; i < 4; i++) {
-    console.table(NeuralNetwork.feedForward(new NeuralNetwork()));
-}
+module.exports = NeuralNetwork;
