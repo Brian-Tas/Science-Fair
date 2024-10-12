@@ -60,6 +60,20 @@ class NeuralNetwork {
             4 //left, right, forward, back
         ))
     }
+
+    static feedForward(network) {
+        let currentOutputs = network.levels[0].inputs; 
+
+        for (let i = 0; i < network.levels.length; i++) {
+            network.levels[i].inputs = currentOutputs; 
+            currentOutputs = Level.feedForward(network.levels[i]); 
+        }
+
+        return currentOutputs;
+    }
 }
 
-console.table(Level.feedForward(new NeuralNetwork().levels[0]));
+
+for(let i = 0; i < 4; i++) {
+    console.table(NeuralNetwork.feedForward(new NeuralNetwork()));
+}
