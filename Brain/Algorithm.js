@@ -1,0 +1,1 @@
+const Creature = require('./Creature.js');
