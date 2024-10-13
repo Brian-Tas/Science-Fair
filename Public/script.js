@@ -134,18 +134,26 @@ class Food {
         this.x = Math.random();
         this.y = Math.random();
     }
+
+    draw() {
+        ctx.save(); // Save the current context state
+        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        
+        ctx.beginPath(); // Begin a new path
+        ctx.arc(0, 0, 4, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.fillStyle = '#964B00'; // Set a fill color
+        ctx.fill(); // Fill the circle
+        ctx.restore(); // Restore the context state
+    }
 }
 
 let gilbert = [];
-let food = [];
-let gilbertCount = 100;
+let gilbertCount = 3000;
 let foodCount = 100;
 
 for(let i = 0; i < gilbertCount; i++) {
     gilbert.push(new Creature(0.5 + (Math.random() * 2 - 1)/10, 0.5 + (Math.random() * 2 - 1)/10));
-    for(let j = 0; j < foodCount; j++) {
-        food.push()
-    }
 }
 
 
