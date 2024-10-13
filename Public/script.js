@@ -1,3 +1,6 @@
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
 class Level {
     constructor(inputCount, outputCount, activation = 'binary') {
         this.biases = new Array(outputCount);
@@ -82,17 +85,8 @@ class Creature {
         this.vx = 0;
         this.vy = 0;
 
-        let doc = document.createElement('img');
-        doc.classList.add('gilbert');
-        doc.id = `${gilberts}`;
-        doc.src = `./Assets/gilbert.png`
-
-        document.body.appendChild(doc);
-
-        this.doc = doc;
-
         this.v = 10; //velocity
-        this.r = 0.25; //rotational degree
+        this.r = Math.random(); //rotational degree
         this.rv = 0; //rotational speed
 
         this.sight = new Array(eyeCount).fill(1);
@@ -100,20 +94,21 @@ class Creature {
         this.net = new NeuralNetwork([[5, 'tanh'], [7, 'tanh'], [7, 'tanh'], [2, 'tanh']]);
     }
 
-    run(n1 = 1, n2 = this.x, n3 = this.y, n4 = this.sight[0], n5 = this.sight[1], n6 = this.v, n7 = this.r) {
+    run(n1 = 1, n2 = this.x, n3 = this.y, n4 = this.v, n5 = this.r) {
+        this.net.levels[0].inputs = [n1, n2, n3, n4, n5];
         return NeuralNetwork.feedForward(this.net);
     }
 
     move() {
-        this.r += this.rv / 1.5;
+        this.r += this.rv / 200;
         this.rv *= 0.99;
     
-        const radians = this.r * 180 * (Math.PI / 180);
+        const radians = this.r * 360 * (Math.PI / 180);
         const deltaX = this.v * Math.sin(radians);
-        const deltaY = this.v * Math.cos(radians);
+        const deltaY = this.v * -Math.cos(radians);
     
-        this.vx += deltaX / 10;
-        this.vy += deltaY / 10;
+        this.vx += deltaX / 180;
+        this.vy += deltaY / 180;
     
         this.vx *= 0.93;
         this.vy *= 0.93;
@@ -121,22 +116,55 @@ class Creature {
         this.x += this.vx / 100;
         this.y += this.vy / 100;   
     }
-
     draw() {
-        this.doc.style.top = `${this.y * 900 + 30}px`;
-        this.doc.style.left = `${this.x * 900 + 30}px`;
-        this.doc.style.transform = `rotate(${this.r * 360}deg)`;
+        ctx.save(); // Save the current context state
+        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        
+        ctx.beginPath(); // Begin a new path
+        ctx.arc(0, 0, 4, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.fillStyle = '#FFA500'; // Set a fill color
+        ctx.fill(); // Fill the circle
+        ctx.restore(); // Restore the context state
     }
 }
 
-let styleGilbert = document.getElementById('one').style;
+class Food {
+    constructor() {
+        this.x = Math.random();
+        this.y = Math.random();
+    }
+}
 
-let gilbert = new Creature();
+let gilbert = [];
+let food = [];
+let gilbertCount = 100;
+let foodCount = 100;
 
-setInterval(()=>{
-    console.log(gilbert.x);
-    gilbert.draw();
-    gilbert.move();
-}, 200);
+for(let i = 0; i < gilbertCount; i++) {
+    gilbert.push(new Creature(0.5 + (Math.random() * 2 - 1)/10, 0.5 + (Math.random() * 2 - 1)/10));
+    for(let j = 0; j < foodCount; j++) {
+        food.push()
+    }
+}
 
-console.table(gilbert.run());
+
+function updateCreatures() {
+    ctx.clearRect(0, 0, 900, 900);
+
+    gilbert.forEach((creature) => {
+        creature.draw();
+        creature.move();
+        let idea = creature.run();
+        creature.v += idea[0];
+        creature.rv += idea[1];
+        creature.v = Math.max(-5, Math.min(12.5, creature.v));
+        creature.rv = Math.max(-3, Math.min(6, creature.rv));
+    });
+
+    gilbert = gilbert.filter(creature => !(creature.x > 29/30 || creature.x < -1/30 || creature.y > 29/30 || creature.y < -1/30));
+
+    requestAnimationFrame(updateCreatures);
+}
+
+requestAnimationFrame(updateCreatures);
