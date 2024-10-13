@@ -2,5 +2,21 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #0000ff;
+    background-color: #3893C1;
+}
+
+.arena {
+    width: 900px;
+    height: 900px;
+    background-color: #9FCDE4;
+}
+
+.gilbert {
+    background-image: url("./Assets/gilbert.png");
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    top: 30px;
+    left: 30px;
+    transform: rotate(90deg);
 }
