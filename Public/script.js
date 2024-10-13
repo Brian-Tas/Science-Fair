@@ -73,13 +73,23 @@ class NeuralNetwork {
         return currentOutputs;
     }
 }
+let gilberts = 0;
 class Creature {
     constructor(xCoordinate = 0, yCoordinate = 0, eyeCount = 2) {
         this.x = xCoordinate; //x coordinate. number between 0 and 1 that is a ratio of how far across the square it is
         this.y = yCoordinate; //y coordinate. number between 0 and 1 that is a ratio of how far across the square it is
         
-        this.xv = 0;
-        this.yv = 0;
+        this.vx = 0;
+        this.vy = 0;
+
+        let doc = document.createElement('img');
+        doc.classList.add('gilbert');
+        doc.id = `${gilberts}`;
+        doc.src = `./Assets/gilbert.png`
+
+        document.body.appendChild(doc);
+
+        this.doc = doc;
 
         this.v = 10; //velocity
         this.r = 0.25; //rotational degree
@@ -93,40 +103,40 @@ class Creature {
     run(n1 = 1, n2 = this.x, n3 = this.y, n4 = this.sight[0], n5 = this.sight[1], n6 = this.v, n7 = this.r) {
         return NeuralNetwork.feedForward(this.net);
     }
+
+    move() {
+        this.r += this.rv / 1.5;
+        this.rv *= 0.99;
+    
+        const radians = this.r * 180 * (Math.PI / 180);
+        const deltaX = this.v * Math.sin(radians);
+        const deltaY = this.v * Math.cos(radians);
+    
+        this.vx += deltaX / 10;
+        this.vy += deltaY / 10;
+    
+        this.vx *= 0.93;
+        this.vy *= 0.93;
+    
+        this.x += this.vx / 100;
+        this.y += this.vy / 100;   
+    }
+
+    draw() {
+        this.doc.style.top = `${this.y * 900 + 30}px`;
+        this.doc.style.left = `${this.x * 900 + 30}px`;
+        this.doc.style.transform = `rotate(${this.r * 360}deg)`;
+    }
 }
 
 let styleGilbert = document.getElementById('one').style;
 
-function draw() {
-    styleGilbert.top = `${gilbert.y * 900 + 20}px`;
-    styleGilbert.left = `${gilbert.x * 900 + 20}px`;
-    styleGilbert.transform = `rotate(${gilbert.r*360}deg)`;
-}
-
-function deltaMove(obj) {
-    obj.r += obj.rv / 10;
-    obj.rv *= 0.99;
-    
-    const radians = (obj.r * 360) * (Math.PI / 180);
-    const deltaX = obj.v * Math.sin(radians);
-    const deltaY = obj.v * Math.cos(radians);
-    
-    obj.vx += deltaX / 10;
-    obj.vy += deltaY / 10;
-    
-    obj.vx *= 0.93;
-    obj.vy *= 0.93;
-    
-    obj.x += obj.vx / 10;
-    obj.y += obj.vy / 10;   
-}
-
 let gilbert = new Creature();
 
 setInterval(()=>{
-    console.log('hi')
-    draw();
-    deltaMove(gilbert);
+    console.log(gilbert.x);
+    gilbert.draw();
+    gilbert.move();
 }, 200);
 
 console.table(gilbert.run());
