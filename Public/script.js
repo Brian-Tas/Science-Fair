@@ -3,26 +3,31 @@ const ctx = canvas.getContext('2d');
 
 class Level {
     constructor(inputCount, outputCount, activation = 'binary') {
-        this.biases = new Array(outputCount);
-        this.inputs = new Array(inputCount);
+        this.biases = new Array(outputCount).fill(0);
+        this.inputs = new Array(inputCount).fill(0);
         this.outputs = new Array(outputCount).fill(0);
         this.activation = activation;
 
         this.weights = [];
         for(let i = 0; i < inputCount; i++) {
-            this.weights[i] = new Array(outputCount);
+            this.weights[i] = new Array(outputCount).fill(0);
         }
 
-        Level.randomize(this);
+        this.mutate();
     }
 
-    static randomize(level) {
-        for(let i = 0; i < level.biases.length; i++) {
-            level.biases[i] = (Math.random() * 2 - 1)
+    mutate(mutationRate = 0.1, mutationAmount = 0.5) {
+        for (let j = 0; j < this.biases.length; j++) {
+            if (Math.random() < mutationRate) {
+                this.biases[j] += (Math.random() * 2 - 1) * mutationAmount;
+            }
         }
-        for(let i = 0; i < level.weights.length; i++) {
-            for(let j = 0; j < level.weights[i].length; j++) {
-                level.weights[i][j] = Math.random() * 2 - 1;
+
+        for (let i = 0; i < this.weights.length; i++) {
+            for (let j = 0; j < this.weights[i].length; j++) {
+                if (Math.random() < mutationRate) {
+                    this.weights[i][j] += (Math.random() * 2 - 1) * mutationAmount;
+                }
             }
         }
     }
@@ -75,6 +80,12 @@ class NeuralNetwork {
 
         return currentOutputs;
     }
+
+    mutateNetwork() {
+        for(let i = 0; i < this.levels.length; i++) {
+            this.levels[i].mutate();
+        }
+    }
 }
 let gilberts = 0;
 class Creature {
@@ -85,13 +96,20 @@ class Creature {
         this.vx = 0;
         this.vy = 0;
 
-        this.v = 10; //velocity
+        this.id = gilberts;
+        gilberts++;
+
+        this.v = 0; //velocity
         this.r = Math.random(); //rotational degree
         this.rv = 0; //rotational speed
 
         this.sight = new Array(eyeCount).fill(1);
 
         this.net = new NeuralNetwork([[5, 'tanh'], [7, 'tanh'], [7, 'tanh'], [2, 'tanh']]);
+
+        setTimeout(()=>{
+            gilbert.filter(condemned => condemned.id !== this.id);
+        }, 1000);
     }
 
     run(n1 = 1, n2 = this.x, n3 = this.y, n4 = this.v, n5 = this.r) {
@@ -170,9 +188,13 @@ function updateCreatures() {
         creature.rv = Math.max(-3, Math.min(6, creature.rv));
     });
 
+    console.log(gilbert.length);
+
     gilbert = gilbert.filter(creature => !(creature.x > 29/30 || creature.x < -1/30 || creature.y > 29/30 || creature.y < -1/30));
 
     requestAnimationFrame(updateCreatures);
 }
 
+console.table(gilbert[0].net.levels);
+console.table(gilbert[0].run())
 requestAnimationFrame(updateCreatures);
