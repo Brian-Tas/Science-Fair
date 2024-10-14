@@ -87,7 +87,7 @@ class NeuralNetwork {
 }
 let gilberts = 0;
 class Creature {
-    constructor(xCoordinate = 0, yCoordinate = 0, eyeCount = 2) {
+    constructor(xCoordinate = 0, yCoordinate = 0) {
         this.x = xCoordinate; //x coordinate. number between 0 and 1 that is a ratio of how far across the square it is
         this.y = yCoordinate; //y coordinate. number between 0 and 1 that is a ratio of how far across the square it is
         
@@ -97,11 +97,14 @@ class Creature {
         this.id = gilberts;
         gilberts++;
 
+        this.sightRadius = 1;
+        this.sight = [];
+
+        this.food = Array.from({ length: foodCount }, () => new Food());
+
         this.v = 0; //velocity
         this.r = Math.random(); //rotational degree
         this.rv = 0; //rotational speed
-
-        this.sight = new Array(eyeCount).fill(1);
 
         this.net = new NeuralNetwork([[5, 'tanh'], [7, 'tanh'], [7, 'tanh'], [2, 'tanh']]);
 
@@ -140,10 +143,51 @@ class Creature {
         ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
         ctx.beginPath(); // Begin a new path
+        ctx.arc(0, 0, this.sightRadius*120+5, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.fillStyle = '#808080'; // Set a fill color
+        ctx.fill(); // Fill the circle
+        ctx.restore(); // Restore the context state
+
+        ctx.save(); // Save the current context state
+        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        
+        ctx.beginPath(); // Begin a new path
+        ctx.arc(0, 0, this.sightRadius*120, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.fillStyle = '#84afb7'; // Set a fill color
+        ctx.fill(); // Fill the circle
+        ctx.restore(); // Restore the context state
+
+        ctx.save(); // Save the current context state
+        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        
+        ctx.beginPath(); // Begin a new path
+        ctx.arc(0, 0, 7, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.fillStyle = '#000000'; // Set a fill color
+        ctx.fill(); // Fill the circle
+        ctx.restore(); // Restore the context state
+
+        ctx.save(); // Save the current context state
+        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        
+        ctx.beginPath(); // Begin a new path
         ctx.arc(0, 0, 4, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
         ctx.fillStyle = '#FFA500'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
+
+    }
+    checkSight() {
+        for(let i = 0; i < this.food.length; i++) {
+            const food = this.food[i];
+            const distance = Math.sqrt((food.x - this.x) ** 2 + (food.y - this.y) ** 2);
+
+            if(distance * 900 < this.sightRadius * 120) {
+                food.draw();
+            }
+        }
     }
 }
 
@@ -156,18 +200,17 @@ class Food {
     draw() {
         ctx.save(); // Save the current context state
         ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
-        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
         ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, 4, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
-        ctx.fillStyle = '#964B00'; // Set a fill color
+        ctx.arc(0, 0, 2, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.fillStyle = '#000000'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
     }
 }
 
 let gilbert = [];
-let gilbertCount = 1000;
+let gilbertCount = 1;
 let foodCount = 100;
 
 for(let i = 0; i < gilbertCount; i++) {
@@ -186,7 +229,9 @@ function updateCreatures() {
         creature.v += idea[0];
         creature.rv += idea[1];
         creature.v = Math.max(-5, Math.min(12.5, creature.v));
-        creature.rv = Math.max(-6, Math.min(6, creature.rv));
+        creature.rv = Math.max(-3, Math.min(3, creature.rv));
+        creature.net.mutateNetwork();
+        creature.checkSight();
     });
 
     console.log(gilbert.length);
