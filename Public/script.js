@@ -12,8 +12,6 @@ class Level {
         for(let i = 0; i < inputCount; i++) {
             this.weights[i] = new Array(outputCount).fill(0);
         }
-
-        this.mutate();
     }
 
     mutate(mutationRate = 0.1, mutationAmount = 0.5) {
@@ -81,9 +79,9 @@ class NeuralNetwork {
         return currentOutputs;
     }
 
-    mutateNetwork() {
+    mutateNetwork(mutationRate = 0.1, mutationAmount = 0.5) {
         for(let i = 0; i < this.levels.length; i++) {
-            this.levels[i].mutate();
+            this.levels[i].mutate(mutationRate, mutationAmount);
         }
     }
 }
@@ -107,9 +105,11 @@ class Creature {
 
         this.net = new NeuralNetwork([[5, 'tanh'], [7, 'tanh'], [7, 'tanh'], [2, 'tanh']]);
 
-        setTimeout(()=>{
-            gilbert.filter(condemned => condemned.id !== this.id);
-        }, 1000);
+        // Schedule the creature to be killed after 10 seconds
+        setTimeout(() => {
+            // Remove this creature from the `gilbert` array based on its `id`
+            gilbert = gilbert.filter(creature => creature.id !== this.id);
+        }, 10000); // 10000 ms = 10 seconds
     }
 
     run(n1 = 1, n2 = this.x, n3 = this.y, n4 = this.v, n5 = this.r) {
@@ -167,11 +167,12 @@ class Food {
 }
 
 let gilbert = [];
-let gilbertCount = 3000;
+let gilbertCount = 1000;
 let foodCount = 100;
 
 for(let i = 0; i < gilbertCount; i++) {
     gilbert.push(new Creature(0.5 + (Math.random() * 2 - 1)/10, 0.5 + (Math.random() * 2 - 1)/10));
+    gilbert[i].net.mutateNetwork(1, 1);
 }
 
 
@@ -185,7 +186,7 @@ function updateCreatures() {
         creature.v += idea[0];
         creature.rv += idea[1];
         creature.v = Math.max(-5, Math.min(12.5, creature.v));
-        creature.rv = Math.max(-3, Math.min(6, creature.rv));
+        creature.rv = Math.max(-6, Math.min(6, creature.rv));
     });
 
     console.log(gilbert.length);
