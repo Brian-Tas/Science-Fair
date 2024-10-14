@@ -163,7 +163,7 @@ class Creature {
         ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
         ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, 7, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.arc(0, 0, 11, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
         ctx.fillStyle = '#000000'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
@@ -173,7 +173,7 @@ class Creature {
         ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
         ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, 4, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.arc(0, 0, 7, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
         ctx.fillStyle = '#FFA500'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
@@ -210,7 +210,7 @@ class Food {
 }
 
 let gilbert = [];
-let gilbertCount = 1;
+let gilbertCount = 10;
 let foodCount = 100;
 
 for(let i = 0; i < gilbertCount; i++) {
@@ -230,7 +230,6 @@ function updateCreatures() {
         creature.rv += idea[1];
         creature.v = Math.max(-5, Math.min(12.5, creature.v));
         creature.rv = Math.max(-3, Math.min(3, creature.rv));
-        creature.net.mutateNetwork();
         creature.checkSight();
     });
 
