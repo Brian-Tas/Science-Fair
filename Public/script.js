@@ -210,7 +210,7 @@ class Food {
 }
 
 let gilbert = [];
-let gilbertCount = 10;
+let gilbertCount = 10000;
 let foodCount = 100;
 
 for(let i = 0; i < gilbertCount; i++) {
