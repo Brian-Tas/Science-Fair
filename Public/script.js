@@ -101,12 +101,14 @@ class Creature {
         this.sight = [];
 
         this.food = Array.from({ length: foodCount }, () => new Food());
+        this.closestFood = 0;
+        this.checkSight();
 
         this.v = 0; //velocity
         this.r = Math.random(); //rotational degree
         this.rv = 0; //rotational speed
 
-        this.net = new NeuralNetwork([[5, 'tanh'], [7, 'tanh'], [7, 'tanh'], [2, 'tanh']]);
+        this.net = new NeuralNetwork([[6, 'tanh'], [15, 'tanh'], [15, 'tanh'], [15, 'tanh'], [15, 'tanh'], [2, 'tanh']]);
 
         // Schedule the creature to be killed after 10 seconds
         setTimeout(() => {
@@ -115,8 +117,8 @@ class Creature {
         }, 10000); // 10000 ms = 10 seconds
     }
 
-    run(n1 = 1, n2 = this.x, n3 = this.y, n4 = this.v, n5 = this.r) {
-        this.net.levels[0].inputs = [n1, n2, n3, n4, n5];
+    run(n1 = 1, n2 = this.x, n3 = this.y, n4 = this.v, n5 = this.r, n6 = this.closestFood) {
+        this.net.levels[0].inputs = [n1, n2, n3, n4, n5, n6];
         return NeuralNetwork.feedForward(this.net);
     }
 
@@ -154,7 +156,7 @@ class Creature {
         
         ctx.beginPath(); // Begin a new path
         ctx.arc(0, 0, this.sightRadius*120, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
-        ctx.fillStyle = '#84afb7'; // Set a fill color
+        ctx.fillStyle = '#90d5ff'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
 
@@ -180,14 +182,26 @@ class Creature {
 
     }
     checkSight() {
+        let closest = [Infinity, null];
+        
         for(let i = 0; i < this.food.length; i++) {
             const food = this.food[i];
             const distance = Math.sqrt((food.x - this.x) ** 2 + (food.y - this.y) ** 2);
 
             if(distance * 900 < this.sightRadius * 120) {
-                food.draw();
+                if(distance < closest[0]) {
+                    closest[0] = distance;
+                    closest[1] = food;
+                }
+                food.draw(false);
             }
         }
+        
+        if(closest[1]) {
+            closest[1].draw(true, this.x, this.y);
+        }
+        
+        this.closestFood =  closest[0];
     }
 }
 
@@ -197,21 +211,27 @@ class Food {
         this.y = Math.random();
     }
 
-    draw() {
+    draw(highlight=false, targetX, targetY) {
         ctx.save(); // Save the current context state
         ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
-        
+    
         ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, 2, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
-        ctx.fillStyle = '#000000'; // Set a fill color
+        
+        if(highlight) {
+            ctx.fillStyle = '#FF0000';
+            ctx.arc(0, 0, 4, 0, Math.PI * 2); // Draw food
+        } else {
+            ctx.fillStyle = '#000000'; // Set a fill color
+            ctx.arc(0, 0, 2, 0, Math.PI * 2); // Draw food
+        }
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
     }
 }
 
 let gilbert = [];
-let gilbertCount = 10000;
-let foodCount = 100;
+let gilbertCount = 1;
+let foodCount = 50;
 
 for(let i = 0; i < gilbertCount; i++) {
     gilbert.push(new Creature(0.5 + (Math.random() * 2 - 1)/10, 0.5 + (Math.random() * 2 - 1)/10));
@@ -232,8 +252,6 @@ function updateCreatures() {
         creature.rv = Math.max(-3, Math.min(3, creature.rv));
         creature.checkSight();
     });
-
-    console.log(gilbert.length);
 
     gilbert = gilbert.filter(creature => !(creature.x > 29/30 || creature.x < -1/30 || creature.y > 29/30 || creature.y < -1/30));
 
