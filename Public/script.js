@@ -145,7 +145,7 @@ class Creature {
         ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
         ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, this.sightRadius*120+5, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.arc(0, 0, this.sightRadius*canvas.width*(130/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
         ctx.fillStyle = '#808080'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
@@ -155,7 +155,7 @@ class Creature {
         ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
         ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, this.sightRadius*120, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.arc(0, 0, this.sightRadius*canvas.width*(120/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
         ctx.fillStyle = '#90d5ff'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
@@ -165,7 +165,7 @@ class Creature {
         ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
         ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, 11, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.arc(0, 0, canvas.width*(11/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
         ctx.fillStyle = '#000000'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
@@ -175,7 +175,7 @@ class Creature {
         ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
         ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, 7, 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        ctx.arc(0, 0, canvas.width*(7/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
         ctx.fillStyle = '#FFA500'; // Set a fill color
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
@@ -188,7 +188,7 @@ class Creature {
             const food = this.food[i];
             const distance = Math.sqrt((food.x - this.x) ** 2 + (food.y - this.y) ** 2);
 
-            if(distance * 900 < this.sightRadius * 120) {
+            if(distance * canvas.width < this.sightRadius * canvas.width * (120/900)) {
                 if(distance < closest[0]) {
                     closest[0] = distance;
                     closest[1] = food;
@@ -219,10 +219,10 @@ class Food {
         
         if(highlight) {
             ctx.fillStyle = '#FF0000';
-            ctx.arc(0, 0, 4, 0, Math.PI * 2); // Draw food
+            ctx.arc(0, 0, canvas.width*(4/900), 0, Math.PI * 2); // Draw food
         } else {
             ctx.fillStyle = '#000000'; // Set a fill color
-            ctx.arc(0, 0, 2, 0, Math.PI * 2); // Draw food
+            ctx.arc(0, 0, canvas.width*(2/900), 0, Math.PI * 2); // Draw food
         }
         ctx.fill(); // Fill the circle
         ctx.restore(); // Restore the context state
@@ -240,7 +240,7 @@ for(let i = 0; i < gilbertCount; i++) {
 
 
 function updateCreatures() {
-    ctx.clearRect(0, 0, 900, 900);
+    ctx.clearRect(0, 0, canvas.width, canvas.width);
 
     gilbert.forEach((creature) => {
         creature.draw();
