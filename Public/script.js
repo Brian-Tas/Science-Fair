@@ -102,14 +102,24 @@ class Creature {
 
         this.food = Array.from({ length: foodCount }, () => new Food());
         this.closestFood = 0;
-        this.checkSight();
-
+        
         this.v = 0; //velocity
         this.r = Math.random(); //rotational degree
         this.rv = 0; //rotational speed
-
+        
         this.net = new NeuralNetwork([[6, 'tanh'], [15, 'tanh'], [15, 'tanh'], [15, 'tanh'], [15, 'tanh'], [2, 'tanh']]);
+        
+        this.canvas = document.createElement('canvas');
 
+        this.canvas.height = this.canvas.width = 4000/gilbertCount;
+
+        this.canvas.style.border = '2px solid';
+
+        document.body.appendChild(this.canvas);
+
+        this.ctx = this.canvas.getContext('2d');
+        
+        this.checkSight();
         // Schedule the creature to be killed after 10 seconds
         setTimeout(() => {
             // Remove this creature from the `gilbert` array based on its `id`
@@ -140,45 +150,45 @@ class Creature {
         this.y += this.vy / 100;   
     }
     draw() {
-        ctx.save(); // Save the current context state
-        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
-        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        this.ctx.save(); // Save the current context state
+        this.ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        this.ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
-        ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, this.sightRadius*canvas.width*(130/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
-        ctx.fillStyle = '#808080'; // Set a fill color
-        ctx.fill(); // Fill the circle
-        ctx.restore(); // Restore the context state
+        this.ctx.beginPath(); // Begin a new path
+        this.ctx.arc(0, 0, this.sightRadius*canvas.width*(130/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        this.ctx.fillStyle = '#808080'; // Set a fill color
+        this.ctx.fill(); // Fill the circle
+        this.ctx.restore(); // Restore the context state
 
-        ctx.save(); // Save the current context state
-        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
-        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        this.ctx.save(); // Save the current context state
+        this.ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        this.ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
-        ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, this.sightRadius*canvas.width*(120/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
-        ctx.fillStyle = '#90d5ff'; // Set a fill color
-        ctx.fill(); // Fill the circle
-        ctx.restore(); // Restore the context state
+        this.ctx.beginPath(); // Begin a new path
+        this.ctx.arc(0, 0, this.sightRadius*canvas.width*(120/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        this.ctx.fillStyle = '#90d5ff'; // Set a fill color
+        this.ctx.fill(); // Fill the circle
+        this.ctx.restore(); // Restore the context state
 
-        ctx.save(); // Save the current context state
-        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
-        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        this.ctx.save(); // Save the current context state
+        this.ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        this.ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
-        ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, canvas.width*(11/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
-        ctx.fillStyle = '#000000'; // Set a fill color
-        ctx.fill(); // Fill the circle
-        ctx.restore(); // Restore the context state
+        this.ctx.beginPath(); // Begin a new path
+        this.ctx.arc(0, 0, canvas.width*(11/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        this.ctx.fillStyle = '#000000'; // Set a fill color
+        this.ctx.fill(); // Fill the circle
+        this.ctx.restore(); // Restore the context state
 
-        ctx.save(); // Save the current context state
-        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
-        ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
+        this.ctx.save(); // Save the current context state
+        this.ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+        this.ctx.rotate(this.r * Math.PI / 180); // Rotate the context to the creature's rotation
         
-        ctx.beginPath(); // Begin a new path
-        ctx.arc(0, 0, canvas.width*(7/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
-        ctx.fillStyle = '#FFA500'; // Set a fill color
-        ctx.fill(); // Fill the circle
-        ctx.restore(); // Restore the context state
+        this.ctx.beginPath(); // Begin a new path
+        this.ctx.arc(0, 0, canvas.width*(7/900), 0, Math.PI * 2); // Change radius to 5 (or to your desired size)
+        this.ctx.fillStyle = '#FFA500'; // Set a fill color
+        this.ctx.fill(); // Fill the circle
+        this.ctx.restore(); // Restore the context state
 
     }
     checkSight() {
@@ -193,12 +203,12 @@ class Creature {
                     closest[0] = distance;
                     closest[1] = food;
                 }
-                food.draw(false);
+                food.draw(false, this.ctx);
             }
         }
         
         if(closest[1]) {
-            closest[1].draw(true, this.x, this.y);
+            closest[1].draw(true, this.ctx);
         }
         
         this.closestFood =  closest[0];
@@ -211,21 +221,21 @@ class Food {
         this.y = Math.random();
     }
 
-    draw(highlight=false, targetX, targetY) {
-        ctx.save(); // Save the current context state
-        ctx.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
+    draw(highlight=false, context) {
+        context.save(); // Save the current context state
+        context.translate(this.x * canvas.width, this.y * canvas.height); // Translate to the creature's position
     
-        ctx.beginPath(); // Begin a new path
+        context.beginPath(); // Begin a new path
         
         if(highlight) {
-            ctx.fillStyle = '#FF0000';
-            ctx.arc(0, 0, canvas.width*(4/900), 0, Math.PI * 2); // Draw food
+            context.fillStyle = '#FF0000';
+            context.arc(0, 0, canvas.width*(4/900), 0, Math.PI * 2); // Draw food
         } else {
-            ctx.fillStyle = '#000000'; // Set a fill color
-            ctx.arc(0, 0, canvas.width*(2/900), 0, Math.PI * 2); // Draw food
+            context.fillStyle = '#000000'; // Set a fill color
+            context.arc(0, 0, canvas.width*(2/900), 0, Math.PI * 2); // Draw food
         }
-        ctx.fill(); // Fill the circle
-        ctx.restore(); // Restore the context state
+        context.fill(); // Fill the circle
+        context.restore(); // Restore the context state
     }
 }
 
@@ -240,9 +250,8 @@ for(let i = 0; i < gilbertCount; i++) {
 
 
 function updateCreatures() {
-    ctx.clearRect(0, 0, canvas.width, canvas.width);
-
     gilbert.forEach((creature) => {
+        creature.ctx.clearRect(0, 0, canvas.width, canvas.height);
         creature.draw();
         creature.move();
         let idea = creature.run();

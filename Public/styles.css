@@ -5,17 +5,8 @@ body {
     background-color: #3893C1;
 }
 
-.arena {
-    width: 900px;
-    height: 900px;
-    background-color: #9FCDE4;
-}
-
-.gilbert {
+#canvas {
     position: absolute;
-    width: 10px;
-    height: 20px;
-    top: 30px;
-    left: 30px;
-    transform: rotate(90deg);
+    bottom: 10px;
+    left: 10px;
 }
